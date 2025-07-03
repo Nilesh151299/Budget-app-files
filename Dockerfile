@@ -1,26 +1,22 @@
-FROM ruby:3.1.2
-
-
-# Install dependencies
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client yarn
+# Use the official Ruby image
+FROM ruby:3.2
 
 # Set working directory
 WORKDIR /app
 
-# Copy Gemfiles and install gems
-COPY Gemfile /app/Gemfile
-COPY Gemfile.lock /app/Gemfile.lock
+# Install dependencies
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
-# Copy app source
-COPY . /app
+# Copy the rest of the app
+COPY . .
 
-# Precompile assets (if needed, optional for dev)
+# Precompile assets (optional, depends on your app)
 # RUN bundle exec rake assets:precompile
 
-# Expose port
+# Expose port (commonly used by Rails)
 EXPOSE 3000
 
-# Default command
-CMD ["bash", "-c", "rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"]
+# Start the Rails server
+CMD ["rails", "server", "-b", "0.0.0.0"]
 
